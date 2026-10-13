@@ -1,5 +1,7 @@
 # Motion Video Skill：讓 AI Agent 幫你做動態設計影片
 
+[English](https://github.com/nutcelvischen-jpg/motion-video-skill/tree/en) | **繁體中文**
+
 用一句話告訴 AI 你想做什麼影片，它會寫旁白、做動畫、配音，最後輸出 MP4。
 
 - **兩種版型**：直式手繪短影音（教學、概念解釋）／橫式高級感（專題介紹、成果發表）
@@ -30,6 +32,8 @@ git clone https://github.com/nutcelvischen-jpg/motion-video-skill .agents/skills
 ```
 
 > 想讓所有專案都能用，可以改放在全域位置：`~/.gemini/config/skills/motion-video`
+>
+> 英文版：在 `git clone` 後面加上 `-b en`。
 
 ### 3. 安裝套件
 
