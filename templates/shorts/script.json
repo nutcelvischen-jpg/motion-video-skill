@@ -1,7 +1,7 @@
 {
   "format": "shorts",
   "size": [1080, 1920],
-  "langs": ["zh", "en"],
+  "langs": ["en", "zh"],
   "voice": { "zh": "Puck", "en": "Charon" },
   "style": {
     "zh": "請用台灣口音的華語，像親切、活潑的年輕老師在跟學生解釋，語速稍快、句尾自然上揚，不要播音腔。",

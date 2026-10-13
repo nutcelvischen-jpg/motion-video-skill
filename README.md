@@ -1,148 +1,152 @@
-# Motion Video Skill：讓 AI Agent 幫你做動態設計影片
+# Motion Video Skill: let an AI agent make motion-design videos for you
 
-用一句話告訴 AI 你想做什麼影片，它會寫旁白、做動畫、配音，最後輸出 MP4。
+**English** | [繁體中文](https://github.com/nutcelvischen-jpg/motion-video-skill/tree/main)
 
-- **兩種版型**：直式手繪短影音（教學、概念解釋）／橫式高級感（專題介紹、成果發表）
-- **AI 配音**：Gemini TTS，可指定台灣口音、語氣
-- **字幕自動對齊**：每句台詞的字幕、動畫都跟著配音時間走
-- **可以一直改**：改台詞、改顏色、改動畫，重新跑一次就好
+Tell the AI what video you want in one sentence. It writes the narration, builds the animation, records the voice-over and exports an MP4.
 
-| 直式短影音 `shorts` | 橫式高級感 `wide` |
+- **Two templates**: vertical hand-drawn shorts (teaching, concept explainers) / horizontal premium (project intros, showcases)
+- **AI voice-over**: Gemini TTS, with the accent and tone you ask for
+- **Subtitles in sync**: every line's subtitle and animation follow the narration timing
+- **Endlessly editable**: change a line, a colour or a move, and run it again
+
+| Vertical `shorts` | Horizontal `wide` |
 |---|---|
 | ![shorts](docs/preview_shorts.jpg) | ![wide](docs/preview_wide.jpg) |
 
-這是一個 **Agent Skill**（`SKILL.md` 格式），可以在 Google Antigravity、Claude Code 等支援 skills 的 AI 工具中使用。
+This is an **Agent Skill** (`SKILL.md` format). It works in AI tools that support skills, such as Google Antigravity and Claude Code.
 
 ---
 
-## 一、準備（約 10 分鐘）
+## 1. Setup (about 10 minutes)
 
-需要：**Python 3.9 以上**、**Git**、網路。
+You need **Python 3.9+**, **Git** and an internet connection.
 
-### 1. 開一個工作資料夾
+### 1.1 Open a workspace folder
 
-在 Antigravity 開啟一個空資料夾（例如 `my-video`），打開終端機（Terminal）。
+In Antigravity, open an empty folder (for example `my-video`) and open the Terminal.
 
-### 2. 安裝 skill
+### 1.2 Install the skill (English version)
 
 ```bash
-git clone https://github.com/nutcelvischen-jpg/motion-video-skill .agents/skills/motion-video
+git clone -b en https://github.com/nutcelvischen-jpg/motion-video-skill .agents/skills/motion-video
 ```
 
-> 想讓所有專案都能用，可以改放在全域位置：`~/.gemini/config/skills/motion-video`
+> To use it in every project, clone it to the global location instead: `~/.gemini/config/skills/motion-video`
+>
+> For the Traditional Chinese version, leave out `-b en`.
 
-### 3. 安裝套件
+### 1.3 Install packages
 
-Mac：
+macOS:
 ```bash
 pip3 install -r .agents/skills/motion-video/requirements.txt
 python3 -m playwright install chromium
 python3 .agents/skills/motion-video/scripts/check_env.py
 ```
-Windows：
+Windows:
 ```powershell
 pip install -r .agents/skills/motion-video/requirements.txt
 python -m playwright install chromium
 python .agents/skills/motion-video/scripts/check_env.py
 ```
-看到「全部就緒！」就完成了。
+When you see "All set!", you're done.
 
-### 4. 設定配音金鑰（可以晚點再做）
+### 1.4 Set a voice-over API key (can wait until later)
 
-二選一。**金鑰只放在環境變數，不要貼進程式碼、不要傳上 GitHub、不要貼給 AI。**
+Pick one. **Keep the key in an environment variable only: never in code, never on GitHub, never pasted to the AI.**
 
-- **Google AI Studio**（有 Google 帳號就能申請）：到 https://aistudio.google.com 點 Get API key
-- **OpenRouter**：到 https://openrouter.ai 申請 Key（需要儲值）
+- **Google AI Studio** (any Google account): go to https://aistudio.google.com and click Get API key
+- **OpenRouter**: create a key at https://openrouter.ai (requires credit)
 
-Mac（每次開新終端機都要重設）：
+macOS (set it again in every new terminal):
 ```bash
-export GEMINI_API_KEY="貼上你的金鑰"
+export GEMINI_API_KEY="paste your key"
 ```
-Windows PowerShell：
+Windows PowerShell:
 ```powershell
-$env:GEMINI_API_KEY="貼上你的金鑰"
+$env:GEMINI_API_KEY="paste your key"
 ```
-OpenRouter 的話把 `GEMINI_API_KEY` 換成 `OPENROUTER_API_KEY`。
+For OpenRouter, use `OPENROUTER_API_KEY` instead of `GEMINI_API_KEY`.
 
-測試：
+Test it:
 ```bash
 python .agents/skills/motion-video/scripts/tts.py --probe
 ```
-會產生 `probe.wav`，點開聽聽看。
+This writes `probe.wav`. Open it and listen.
 
 ---
 
-## 二、做第一支影片
+## 2. Make your first video
 
-在 Antigravity 的 Agent 對話框輸入（照抄後改主題）：
+Type this in the Antigravity agent chat (then change the topic):
 
-> 用 motion-video skill 幫我做一支 45 秒的直式教學短片，主題是「什麼是雲端？」，觀眾是大一新生，用生活比喻解釋，台灣口音、活潑的男生聲音。先給我分鏡大綱和台詞，我確認後再做動畫。
+> Use the motion-video skill to make a 45-second vertical explainer about "What is the cloud?" for first-year university students. Explain it with an everyday metaphor, in a friendly British English voice. Show me the storyboard and narration first; build the animation after I approve.
 
-Agent 會依序：
-1. 給你分鏡大綱與台詞 → **你確認或修改**
-2. 建立 `videos/ep01/`，寫好 `script.json` 和 `index.html`
-3. 輸出總覽圖 `stills/sheet_zh.png`，自己檢查畫面
-4. 配音（`tts.py`）
-5. 輸出影片 `videos/ep01/out/ep01_zh.mp4`
+The agent will:
+1. Give you a storyboard and narration → **you approve or edit**
+2. Create `videos/ep01/` with `script.json` and `index.html`
+3. Render a contact sheet `stills/sheet_en.png` and check the frames itself
+4. Record the narration (`tts.py`)
+5. Export `videos/ep01/out/ep01_en.mp4`
 
-想先看動畫效果：在瀏覽器開 `videos/ep01/index.html?play`。
+To watch the animation early, open `videos/ep01/index.html?play` in a browser.
 
-### 常用的修改說法
+### Handy follow-up requests
 
-- 「第二場的箭頭太小，放大一點，改成橘色」
-- 「主持人跟卡片重疊了，把主持人移到右下角」
-- 「s03 的台詞改成『……』，只重新配那一段」
-- 「整體節奏快一點，每個元素晚 0.2 秒離場」
-- 「再做一個英文版」
-- 「換成我們的吉祥物」（把圖片放到 `videos/ep01/assets/`）
+- "The arrows in scene 2 are too small. Make them bigger and orange."
+- "The host overlaps the card. Move the host to the lower right."
+- "Change s03's line to '…' and re-record only that scene."
+- "Make the pacing snappier: everything should exit 0.2 s later."
+- "Now make a Chinese version too."
+- "Use our mascot instead." (put the image in `videos/ep01/assets/`)
 
-### 專題介紹影片範例
+### Project showcase example
 
-> 用 motion-video skill 的 wide 版型，幫我做 60 秒的期末專題介紹影片。專題叫「○○○」，解決的問題是……，三個功能是……，成果數據是……。活潑有自信的女生聲音。
+> Use the motion-video skill's wide template to make a 60-second final-project intro. The project is called "…", it solves …, its three features are …, and the results are …. A bright, confident young female voice.
 
 ---
 
-## 三、自己動手跑指令
+## 3. Run the commands yourself
 
-不透過 Agent 也可以自己操作。Mac：
+You can also work without the agent. macOS:
 
 ```bash
 S=.agents/skills/motion-video/scripts
-python3 $S/new_episode.py videos/ep01 --template shorts   # 建立（或 --template wide）
-python3 $S/render.py videos/ep01 --preview                # 更新預覽，瀏覽器開 index.html?play
-python3 $S/render.py videos/ep01 --sheet                  # 總覽圖
-python3 $S/tts.py videos/ep01                             # 配音
-python3 $S/render.py videos/ep01 --lang zh                # 輸出 MP4
+python3 $S/new_episode.py videos/ep01 --template shorts   # create (or --template wide)
+python3 $S/render.py videos/ep01 --preview                # refresh preview, open index.html?play
+python3 $S/render.py videos/ep01 --sheet                  # contact sheet
+python3 $S/tts.py videos/ep01                             # narration
+python3 $S/render.py videos/ep01 --lang en                # export MP4
 ```
-Windows PowerShell：第一行改成 `$S=".agents/skills/motion-video/scripts"`，其餘把 `python3` 換成 `python`。
+Windows PowerShell: change the first line to `$S=".agents/skills/motion-video/scripts"` and use `python` instead of `python3`.
 
 ---
 
-## 四、課堂練習
+## 4. Classroom exercises
 
-1. **暖身（15 分鐘）**：用 shorts 範本，不改動畫，只改 `script.json` 的台詞，做出自己的版本。
-2. **改動畫（30 分鐘）**：請 Agent 把範例的「餐廳比喻」換成你自己想的比喻，並加一個新道具。
-3. **完成作品（60 分鐘）**：選一個你懂的概念，做一支 45～60 秒的教學短片，含配音。
-4. **互評**：用 `references/design-guide.md` 的檢查清單互相檢查。
+1. **Warm-up (15 min)**: use the shorts template without touching the animation. Rewrite the lines in `script.json` to make your own version.
+2. **Change the animation (30 min)**: ask the agent to replace the demo's "restaurant" metaphor with one of your own and add a new prop.
+3. **Final piece (60 min)**: pick a concept you know well and make a 45–60 second explainer with narration.
+4. **Peer review**: check each other's videos with the checklist in `references/design-guide.md`.
 
 ---
 
-## 五、運作原理
+## 5. How it works
 
 ```
-script.json（台詞）──► tts.py ──► narration.wav + timeline.json（每句幾秒）
-                                         │
-index.html（畫面 + GSAP 動畫）◄──────────┘ 動畫時間綁在台詞上
+script.json (narration) ──► tts.py ──► narration.wav + timeline.json (seconds per line)
+                                              │
+index.html (visuals + GSAP animation) ◄───────┘ animation timing is tied to the lines
         │
-        └──► render.py：Playwright 每 1/30 秒呼叫 __seek(t) 截圖 ──► ffmpeg ──► MP4
+        └──► render.py: Playwright calls __seek(t) every 1/30 s and screenshots ──► ffmpeg ──► MP4
 ```
 
-詳細流程寫在 [SKILL.md](SKILL.md)，Agent 會照著做。
+The full workflow is in [SKILL.md](SKILL.md); the agent follows it.
 
 ---
 
-## 授權
+## License
 
-- 本專案的程式與文件：MIT License
-- `templates/_common/gsap.min.js`：GSAP by GreenSock，依其 [Standard License](https://gsap.com/standard-license) 使用
-- 字型由 Google Fonts 提供（Noto Sans TC、Noto Serif TC、Inter、JetBrains Mono，皆為 OFL 授權）
+- Code and docs in this project: MIT License
+- `templates/_common/gsap.min.js`: GSAP by GreenSock, used under its [Standard License](https://gsap.com/standard-license)
+- Fonts from Google Fonts (Noto Sans TC, Noto Serif TC, Inter, JetBrains Mono), all under the OFL

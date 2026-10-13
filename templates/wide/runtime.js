@@ -1,6 +1,6 @@
-/* 橫式高級感版型（1920×1080）— 深色底、金色點綴、玻璃卡片、bokeh 光點、模糊上浮
- * 頁面需定義 window.EPISODE = { strings:{...}, build(ctx), tick(t,ctx)? }
- * 主持角色：放 <div id="host"><img src="assets/host.svg"></div>（可換成自己的吉祥物 PNG）
+/* Wide premium template (1920×1080) — dark background, gold accents, glass cards, bokeh, blur-rise
+ * The page must define window.EPISODE = { strings:{...}, build(ctx), tick(t,ctx)? }
+ * Host: <div id="host"><img src="assets/host.svg"></div> (swap in your own mascot PNG)
  */
 (function () {
   const { LANG, TL, META, $, $$, rng, subtitle, ready, fillStrings, timeline } = window.MV;
@@ -36,7 +36,7 @@
   EP.build(ctx);
   m.set({}, {}, TL.total);
 
-  /* bokeh 光點（金色粒子緩慢上飄） */
+  /* bokeh: gold particles drifting slowly upward */
   const bc = $("#bokeh").getContext("2d"); const R = rng(77); const P = [];
   const glow = getComputedStyle(document.documentElement).getPropertyValue("--glow-rgb").trim() || "244,185,45";
   for (let i = 0; i < 46; i++) P.push({ x: R() * 960, y: R() * 540, r: 2 + R() * 10, s: 0.2 + R() * 0.6, a: 0.05 + R() * 0.18, ph: R() * 6.28 });
@@ -54,7 +54,7 @@
     m.seek(t, false);
     bokeh(t);
     const talking = subtitle(t, $("#subbox"));
-    if (hostImg) {   // 圖片主持人：待機上下浮動；講話時輕微伸縮，看起來像在說話
+    if (hostImg) {   // image host: idle bob; slight squash while speaking so it looks like talking
       const bob = Math.sin(t * 2.2) * 8 * state.bob;
       const talk = talking ? Math.max(0, Math.sin(t * 17) + Math.sin(t * 9.3)) * 0.018 : 0;
       hostImg.style.transform = `translateY(${bob.toFixed(1)}px) scale(${(1 - talk / 2).toFixed(4)}, ${(1 + talk).toFixed(4)}) rotate(${(Math.sin(t * 1.3) * 1.5).toFixed(2)}deg)`;

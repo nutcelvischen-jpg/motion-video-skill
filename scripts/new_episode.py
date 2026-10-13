@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""從範本建立一支新影片的資料夾。
+"""Create a new video folder from a template.
 
-用法：
-  python scripts/new_episode.py videos/ep01 --template shorts   # 直式 1080×1920 手繪短影音
-  python scripts/new_episode.py videos/demo --template wide     # 橫式 1920×1080 高級感簡報片
-  python scripts/new_episode.py videos/ep01 --update            # 只更新 _runtime（不動你的 index.html / script.json）
+Usage:
+  python scripts/new_episode.py videos/ep01 --template shorts   # vertical 1080×1920 hand-drawn short
+  python scripts/new_episode.py videos/demo --template wide     # horizontal 1920×1080 premium explainer
+  python scripts/new_episode.py videos/ep01 --update            # refresh _runtime only (keeps your index.html / script.json)
 """
 import argparse, shutil, sys
 from pathlib import Path
@@ -33,11 +33,11 @@ def main():
     dst = Path(a.folder)
     if a.update:
         t = (dst / "_runtime" / "TEMPLATE").read_text(encoding="utf-8").strip()
-        copy_runtime(dst, t); print("✓ 已更新", dst / "_runtime"); return
+        copy_runtime(dst, t); print("✓ Updated", dst / "_runtime"); return
     if not a.template:
-        ap.error("請用 --template shorts 或 --template wide")
+        ap.error("Use --template shorts or --template wide")
     if (dst / "index.html").exists() and not a.force:
-        raise SystemExit(f"{dst} 已經有影片了（要覆蓋請加 --force）")
+        raise SystemExit(f"{dst} already has a video (add --force to overwrite)")
     dst.mkdir(parents=True, exist_ok=True)
     src = TPL / a.template
     for f in ("index.html", "script.json"):
@@ -46,10 +46,10 @@ def main():
         shutil.copytree(src / "assets", dst / "assets", dirs_exist_ok=True)
     copy_runtime(dst, a.template)
     write_tl_js(dst, load_script(dst))
-    print(f"✓ 已建立 {dst}（範本：{a.template}）")
-    print("  1. 改 script.json 的台詞")
-    print("  2. 改 index.html 的畫面與動畫")
-    print(f"  3. 預覽：python scripts/render.py {dst.as_posix()} --preview，再用瀏覽器開 index.html?play")
+    print(f"✓ Created {dst} (template: {a.template})")
+    print("  1. Edit the lines in script.json")
+    print("  2. Edit the visuals and animation in index.html")
+    print(f"  3. Preview: python scripts/render.py {dst.as_posix()} --preview, then open index.html?play in a browser")
 
 
 if __name__ == "__main__":

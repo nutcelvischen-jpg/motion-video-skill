@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""用 Gemini TTS 產生旁白、並依實際音檔長度建立時間軸（只用 Python 標準函式庫）。
+"""Generate narration with Gemini TTS and build a timeline from the real audio lengths (Python standard library only).
 
-兩種金鑰擇一（設成環境變數，不要寫進程式或 script.json）：
-  OPENROUTER_API_KEY  → 走 OpenRouter（預設模型 google/gemini-3.8-flash-tts）
-  GEMINI_API_KEY      → 直接走 Google AI Studio（預設模型 gemini-2.5-flash-preview-tts）
+Use one of two keys (set as environment variables; never put keys in code or script.json):
+  OPENROUTER_API_KEY  -> via OpenRouter (default model google/gemini-3.8-flash-tts)
+  GEMINI_API_KEY      -> via Google AI Studio directly (default model gemini-2.5-flash-preview-tts)
 
-用法：
-  python scripts/tts.py videos/ep01                 # script.json 裡所有語言
-  python scripts/tts.py videos/ep01 --lang zh       # 只做中文
-  python scripts/tts.py videos/ep01 --only s03 s04  # 只重做某幾段（改台詞後用）
-  python scripts/tts.py --probe                     # 用一句話測試金鑰與格式
-輸出：audio_<lang>/sNN.wav、narration_<lang>.wav、timeline_<lang>.json
+Usage:
+  python scripts/tts.py videos/ep01                 # every language in script.json
+  python scripts/tts.py videos/ep01 --lang zh       # Chinese only
+  python scripts/tts.py videos/ep01 --only s03 s04  # redo specific scenes (after editing lines)
+  python scripts/tts.py --probe                     # test your key with one sentence
+Output: audio_<lang>/sNN.wav, narration_<lang>.wav, timeline_<lang>.json
 """
 import argparse, array, base64, json, os, re, sys, time, urllib.error, urllib.request, wave
 from pathlib import Path
@@ -26,7 +26,7 @@ def provider():
         return "openrouter", os.environ["OPENROUTER_API_KEY"]
     if os.environ.get("GEMINI_API_KEY"):
         return "google", os.environ["GEMINI_API_KEY"]
-    raise SystemExit("沒有金鑰。請先設定環境變數 OPENROUTER_API_KEY 或 GEMINI_API_KEY（設定方式見 README）")
+    raise SystemExit("No API key. Set OPENROUTER_API_KEY or GEMINI_API_KEY first (see README)")
 
 
 def _post(url, headers, payload):
@@ -36,12 +36,12 @@ def _post(url, headers, payload):
         return r.read()
 
 
-# ---------- OpenRouter：依序嘗試幾種請求格式，第一個成功的會被記住 ----------
+# ---------- OpenRouter: try several request formats; remember the first that works ----------
 OR_MODEL = os.environ.get("TTS_MODEL", "google/gemini-3.8-flash-tts")
 OR_VARIANTS = [
-    ("字串 input + instructions", lambda t, v, i: {"model": OR_MODEL, "input": t, "voice": v, "instructions": i, "response_format": "pcm"}),
-    ("陣列 input", lambda t, v, i: {"model": OR_MODEL, "response_format": "pcm", "voice": v, "input": [{"text": t, "voice": v, "instructions": i}]}),
-    ("不帶 instructions", lambda t, v, i: {"model": OR_MODEL, "input": t, "voice": v, "response_format": "pcm"}),
+    ("string input + instructions", lambda t, v, i: {"model": OR_MODEL, "input": t, "voice": v, "instructions": i, "response_format": "pcm"}),
+    ("array input", lambda t, v, i: {"model": OR_MODEL, "response_format": "pcm", "voice": v, "input": [{"text": t, "voice": v, "instructions": i}]}),
+    ("no instructions", lambda t, v, i: {"model": OR_MODEL, "input": t, "voice": v, "response_format": "pcm"}),
 ]
 _ok = None
 
@@ -55,9 +55,9 @@ def tts_openrouter(key, text, voice, instr):
             try:
                 data = _post("https://openrouter.ai/api/v1/audio/speech", {"Authorization": f"Bearer {key}"}, build(text, voice, instr))
                 if len(data) < 2000:
-                    raise RuntimeError(f"回傳太短，可能不是音訊：{data[:200]!r}")
+                    raise RuntimeError(f"Response too short; probably not audio: {data[:200]!r}")
                 if _ok is None:
-                    print(f"   ✓ 可用格式：{name}"); _ok = idx
+                    print(f"   ✓ Working format: {name}"); _ok = idx
                 return data
             except urllib.error.HTTPError as e:
                 print(f"   ✗ [{name}] HTTP {e.code}: {e.read().decode(errors='ignore')[:400]}")
@@ -66,10 +66,10 @@ def tts_openrouter(key, text, voice, instr):
                 break
             except (urllib.error.URLError, RuntimeError, TimeoutError) as e:
                 print(f"   ✗ [{name}] {e}"); time.sleep(3 * (attempt + 1))
-    raise SystemExit("OpenRouter 所有格式都失敗。檢查金鑰、餘額，或改用 TTS_MODEL 指定其他模型。")
+    raise SystemExit("All OpenRouter formats failed. Check your key and credit, or set TTS_MODEL to another model.")
 
 
-# ---------- Google AI Studio（Gemini API）----------
+# ---------- Google AI Studio (Gemini API) ----------
 G_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-2.5-flash-preview-tts")
 
 
@@ -84,16 +84,16 @@ def tts_google(key, text, voice, instr):
             part = res["candidates"][0]["content"]["parts"][0]["inlineData"]
             m = re.search(r"rate=(\d+)", part.get("mimeType", ""))
             if m and int(m.group(1)) != RATE:
-                raise SystemExit(f"取樣率是 {m.group(1)}，程式預期 {RATE}，請回報。")
+                raise SystemExit(f"Sample rate is {m.group(1)}, expected {RATE}. Please report this.")
             return base64.b64decode(part["data"])
         except urllib.error.HTTPError as e:
             print(f"   ✗ HTTP {e.code}: {e.read().decode(errors='ignore')[:400]}")
             if e.code == 429 or e.code >= 500:
-                time.sleep(8 * (attempt + 1)); continue     # 免費額度有每分鐘上限，等一下再試
+                time.sleep(8 * (attempt + 1)); continue     # free tier has a per-minute limit; wait and retry
             break
         except (urllib.error.URLError, KeyError, IndexError, TimeoutError) as e:
             print(f"   ✗ {e}"); time.sleep(3 * (attempt + 1))
-    raise SystemExit("Gemini API 失敗。檢查金鑰，或用 GEMINI_TTS_MODEL 指定可用的 TTS 模型。")
+    raise SystemExit("Gemini API failed. Check your key, or set GEMINI_TTS_MODEL to an available TTS model.")
 
 
 def tts(text, voice, instr):
@@ -101,9 +101,9 @@ def tts(text, voice, instr):
     return (tts_openrouter if prov == "openrouter" else tts_google)(key, text, voice, instr)
 
 
-# ---------- 音訊處理 ----------
+# ---------- audio processing ----------
 def trim(pcm, thresh=350):
-    """切掉頭尾的靜音，讓段落銜接更緊。"""
+    """Trim leading/trailing silence so scenes join tightly."""
     a = array.array("h", pcm); win = RATE // 100
     if len(a) < win * 4:
         return pcm
@@ -143,33 +143,33 @@ def run(folder, data, lang, only):
             continue
         f = out / f"{sc['id']}.wav"
         if f.exists() and not only:
-            continue                      # 已經做過的段落略過；要重做請用 --only
+            continue                      # skip scenes already done; use --only to redo
         joiner = "" if lang in CJK else " "
         text = joiner.join(say(l) for l in sc[lang])
         instr = (data.get("style", {}).get(lang, "") + " " + sc.get("dir", {}).get(lang, "")).strip()
-        print(f"→ {lang} {sc['id']}：{text[:36]}…")
+        print(f"→ {lang} {sc['id']}: {text[:36]}…")
         write_wav(f, trim(tts(text, data["voice"][lang], instr)))
     missing = [sc["id"] for sc in data["scenes"] if not (out / f"{sc['id']}.wav").exists()]
     if missing:
-        raise SystemExit(f"還缺這些段落的音檔：{missing}")
-    print(f"✓ {folder.name} {lang} 總長 {build_timeline(folder, data, lang):.1f} 秒")
+        raise SystemExit(f"Audio still missing for: {missing}")
+    print(f"✓ {folder.name} {lang} total {build_timeline(folder, data, lang):.1f}s")
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Gemini TTS 配音")
+    ap = argparse.ArgumentParser(description="Gemini TTS narration")
     ap.add_argument("folder", nargs="?")
     ap.add_argument("--lang"); ap.add_argument("--only", nargs="*", default=[])
-    ap.add_argument("--probe", action="store_true", help="用一句短句測試")
+    ap.add_argument("--probe", action="store_true", help="test with one short sentence")
     a = ap.parse_args()
     if a.probe:
-        pcm = tts("大家好，這是配音測試。", "Puck", "請用台灣口音的華語，活潑的年輕人。")
-        write_wav("probe.wav", pcm); print(f"✓ 已輸出 probe.wav（{len(pcm) / 2 / RATE:.1f} 秒），用 {provider()[0]}"); return
+        pcm = tts("Hi there, this is a voice test.", "Puck", "Speak in a warm, upbeat British English accent.")
+        write_wav("probe.wav", pcm); print(f"✓ Wrote probe.wav ({len(pcm) / 2 / RATE:.1f}s) via {provider()[0]}"); return
     if not a.folder:
-        ap.error("請指定影片資料夾，例如 python scripts/tts.py videos/ep01")
+        ap.error("Give a video folder, e.g. python scripts/tts.py videos/ep01")
     folder = Path(a.folder); data = load_script(folder)
     for lang in ([a.lang] if a.lang else data["langs"]):
         run(folder, data, lang, set(a.only))
-    print("下一步：python scripts/render.py", folder.as_posix(), "--sheet")
+    print("Next: python scripts/render.py", folder.as_posix(), "--sheet")
 
 
 if __name__ == "__main__":

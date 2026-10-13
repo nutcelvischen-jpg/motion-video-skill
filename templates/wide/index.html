@@ -2,7 +2,7 @@
 <html><head><meta charset="utf-8"><title>SnackMap Demo</title>
 <link rel="stylesheet" href="_runtime/runtime.css">
 <style>
-/* ── 這一集專用版面（畫面 1920×1080，上方 140px 有品牌列、下方 160px 是字幕區） ── */
+/* ── Layout for this episode (1920×1080; top 140px is the brand bar, bottom 160px is subtitles) ── */
 #host{left:700px;top:260px}
 #title{left:0;width:1920px;top:300px;text-align:center}
 #title .h1{font-family:"Inter","Noto Serif TC";font-weight:800;font-size:170px}
@@ -19,7 +19,8 @@
 #cmp .lb{width:220px;font-size:36px;color:var(--muted)}
 #cmp .track{flex:1}
 #b1 i{background:linear-gradient(90deg,#6B5547,#8E7465)}
-#cmp .pv{width:300px;text-align:right;font-family:"Inter";font-weight:800;font-size:96px}
+#cmp .pv{width:300px;text-align:right;font-family:"Inter";font-weight:800;font-size:96px;white-space:nowrap}
+.lang-en #cmp .pv{font-size:80px}
 #end{left:0;width:1920px;top:360px;text-align:center}
 .lang-en .pl .ti{font-size:56px}
 </style></head>
@@ -54,21 +55,21 @@ window.EPISODE = {
   build(c) {
     const { m, S, L, LE, LM } = c;
     const min = v => Math.round(v) + (c.LANG === "zh" ? " 分" : " min");
-    // S1：主持人浮現 → 移到左側；標題模糊上浮
+    // S1: host fades in -> moves left; title blur-rises
     c.hostTo({ opacity: 1 }, S(0).start, .8);
     c.hostTo({ x: -560, y: 180, scale: .6 }, L(0, 1) - .4, 1.0);
     c.rise("#title .h1", L(0, 1), 1.1);
     c.rise("#title .h2", L(0, 1) + .35, 1.0);
-    // S2：三張玻璃卡依序上浮 + 光澤掃過
+    // S2: three glass cards rise in turn + sheen
     c.out("#title", S(1).start - .4);
     c.rise(".pl", S(1).start + .1, 1.0, 70);
     [".pl:nth-child(1)", ".pl:nth-child(2)", ".pl:nth-child(3)"].forEach((s, k) => c.sheen(s, LM(1, 0, .35 + k * .2)));
-    // S3：數字長條對比
+    // S3: bar comparison with counting numbers
     c.out("#pillars", S(2).start - .4);
     m.fromTo("#cmp", { opacity: 0 }, { opacity: 1, duration: .6 }, S(2).start);
     c.bar("#b1 i", 100, L(2, 1) + .2); c.count("#v1", 0, 12, L(2, 1) + .2, 1.4, min);
     c.bar("#b2 i", 25, LM(2, 1, .6)); c.count("#v2", 0, 3, LM(2, 1, .6), 1.2, min);
-    // S4：收尾
+    // S4: close
     c.out("#cmp", S(3).start - .4);
     c.hostTo({ x: 0, y: 0, scale: .75 }, S(3).start - .3, 1.0);
     c.hostTo({ x: -520 }, S(3).start + .6, 1.0);

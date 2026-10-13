@@ -1,13 +1,13 @@
-/* motion-video-skill — 共用核心（兩種版型都會載入）
- * 提供：語言/時間軸/META 讀取、亂數、字幕、字型等待、?play 預覽、?t= 定格。
- * 版型 runtime 會呼叫 MV.boot({...})。
+/* motion-video-skill — shared core (loaded by both templates)
+ * Provides: language / timeline / META loading, seeded random, subtitles, font waiting, ?play preview, ?t= freeze frame.
+ * Each template's runtime.js builds on window.MV.
  */
 (function () {
   const qs = new URLSearchParams(location.search);
   const LANG = window.LANG || qs.get("lang") || (window.META && window.META.langs && window.META.langs[0]) || "zh";
   const TL = (window.TIMELINES && window.TIMELINES[LANG]);
   if (!TL) {
-    document.body.innerHTML = `<pre style="font:28px monospace;padding:40px;color:#c00">找不到 ${LANG} 的時間軸。\n請先執行：python scripts/render.py &lt;影片資料夾&gt; --preview</pre>`;
+    document.body.innerHTML = `<pre style="font:28px monospace;padding:40px;color:#c00">No timeline for ${LANG}.\nRun first: python scripts/render.py &lt;video folder&gt; --preview</pre>`;
     throw new Error("no timeline for " + LANG);
   }
   const META = Object.assign({}, (window.META && window.META.common) || {}, (window.META && window.META[LANG]) || {});
@@ -17,7 +17,7 @@
   document.body.classList.add("lang-" + LANG);
   document.documentElement.lang = LANG === "zh" ? "zh-Hant-TW" : LANG;
 
-  /* 可重現的亂數（每一格畫面都要一樣，渲染才會穩定） */
+  /* Seeded random: every frame must be identical on every render */
   function rng(seed) {
     return function () {
       seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
@@ -27,7 +27,7 @@
     };
   }
 
-  /* 字幕：highlight 關鍵字、中文在標點後允許換行 */
+  /* Subtitles: highlight keywords; allow CJK line breaks after punctuation */
   const HL = (META.hl || []).slice().sort((a, b) => b.length - a.length);
   function fmtSub(s) {
     const marks = [];
@@ -50,7 +50,7 @@
     return talking;
   }
 
-  /* 等字型與圖片都載入完，再允許渲染 */
+  /* Wait for fonts and images before rendering */
   function ready(seek, families) {
     const text = TL.scenes.map((s) => s.lines.map((l) => l.sub || l.text).join("")).join("") +
       JSON.stringify(META) + document.body.innerText + "0123456789%✓？！";
@@ -66,21 +66,21 @@
     }
   }
 
-  /* 把 data-t="key" 的元素填上 EPISODE.strings[LANG][key] */
+  /* Fill elements with data-t="key" from EPISODE.strings[LANG][key] */
   function fillStrings(EP) {
     const T = Object.assign({}, (EP.strings || {})[LANG]);
     $$("[data-t]").forEach((el) => { const k = el.dataset.t; if (T[k] !== undefined) el.innerHTML = T[k]; });
     return T;
   }
 
-  /* 共用 GSAP 時間軸 + 常用時間函式 */
+  /* Shared GSAP timeline + timing helpers */
   function timeline() {
     const m = gsap.timeline({ paused: true });
     const S = (i) => TL.scenes[i];
     const L = (i, j) => TL.scenes[i].lines[j].start;
     const LE = (i, j) => TL.scenes[i].lines[j].end;
     const SE = (i) => S(i).start + S(i).dur;
-    const LM = (i, j, k = 0.5) => L(i, j) + (LE(i, j) - L(i, j)) * k; // 某句講到一半
+    const LM = (i, j, k = 0.5) => L(i, j) + (LE(i, j) - L(i, j)) * k; // a fraction k of the way through a line
     return { m, S, L, LE, SE, LM };
   }
 

@@ -1,42 +1,42 @@
-# 動態設計原則
+# Motion-design principles
 
-目標：看起來像專業 motion designer 做的，而不是投影片加轉場。
+Goal: it should look like a motion designer made it, not like slides with transitions.
 
-## 1. 共通原則
+## 1. General principles
 
-1. **一拍一個想法**：每句台詞對應一個視覺變化。觀眾聽到什麼，就看到什麼。
-2. **進場 → 停留 → 離場**：元素進場要快（0.3～0.6 秒），停留讓人看清楚，下一場前離場。不要讓東西一直堆在畫面上。
-3. **同時最多 3 個重點**：畫面越空，重點越清楚。
-4. **大小對比**：重點字要大（shorts 貼紙 56～130px、wide 標題 110～170px），說明文字小。
-5. **緩動決定質感**：
-   - 手繪可愛風：`back.out(2)` 回彈、`power4.in` 砸下。
-   - 高級感：`expo.out` 慢慢停、加模糊（rise）、大量留白。
-6. **動作有方向**：流程從左到右、時間由上而下；箭頭要「畫出來」而不是直接出現。
-7. **主持角色**：開場在中間打招呼，講解時退到角落（縮小到 0.45～0.6），結尾回到中間或旁邊陪襯。
-8. **字幕永遠清楚**：重點字用 `hl` 上色；畫面元素不能蓋到字幕區。
-9. **片尾**：用一句話總結 + 下一集預告或品牌名，停留 2 秒以上。
+1. **One beat, one idea**: every narration line gets one visual change. What the viewer hears, they see.
+2. **Enter → hold → exit**: enter fast (0.3–0.6 s), hold long enough to read, exit before the next scene. Don't let things pile up.
+3. **At most 3 focal elements**: the emptier the frame, the clearer the point.
+4. **Size contrast**: key words are big (shorts stickers 56–130 px, wide titles 110–170 px); supporting text is small.
+5. **Easing sets the feel**:
+   - Playful hand-drawn: `back.out(2)` bounce, `power4.in` slam.
+   - Premium: `expo.out` slow settle, blur (rise), lots of white space.
+6. **Motion has direction**: processes flow left to right, time flows top to bottom. Arrows are *drawn*, not just shown.
+7. **Host character**: greets in the centre, steps to a corner (scale 0.45–0.6) while explaining, and returns for the close.
+8. **Subtitles stay readable**: highlight key words with `hl`; nothing may cover the subtitle area.
+9. **Outro**: one-line summary plus next-episode teaser or brand name, held for at least 2 seconds.
 
-## 2. shorts 手繪版型
+## 2. shorts (hand-drawn)
 
-- 調性：紙張米色底、黑色粗墨線（6～10px）、硬陰影（8px 8px 0 黑）、橘色強調。
-- 質感來源：`boil` 線條抖動（每 0.1 秒換一次）、膠片顆粒、灰塵、畫面輕微晃動。這些都已內建，不用自己做。
-- 道具：用簡單幾何 SVG 畫生活物件（手機、門、鑰匙、箱子、餐廳），粗線條、少細節、平塗顏色。
-- 調色盤：`--accent` 橘、`--teal` 綠松、`--sky` 天藍、`--yellow` 黃、`--red` 紅、`--green` 綠、`--cream` 米白、`--ink` 墨黑。
+- Look: cream paper, thick black ink lines (6–10 px), hard shadows (8px 8px 0 black), orange accent.
+- Texture comes from line boil (re-seeded every 0.1 s), film grain, dust and slight frame weave. These are built in.
+- Props: draw everyday objects (phone, door, key, box, restaurant) as simple geometric SVG — thick lines, little detail, flat colour.
+- Palette: `--accent` orange, `--teal`, `--sky` blue, `--yellow`, `--red`, `--green`, `--cream`, `--ink`.
 
-## 3. wide 高級感版型
+## 3. wide (premium)
 
-- 調性：深色漸層底、金色光點、玻璃卡片、襯線體大標、大量留白。
-- 節奏比 shorts 慢：進場 0.8～1.2 秒，元素錯開 0.08～0.2 秒。
-- 數據要「長出來」：數字跳動（count）＋長條成長（bar），並加上小字註腳說明資料來源。
-- 截圖要「放進框裡」：用 `.shot` 瀏覽器框，搭配 `tilt` 3D 浮入、`sheen` 光澤。
-- 換品牌色：改 `runtime.css` 是不行的（會被覆蓋），請在 `index.html` 的 `<style>` 裡寫 `:root{--gold:#4FA3FF;--glow-rgb:79,163,255;}`。
+- Look: dark gradient, gold bokeh, glass cards, large serif headings, generous space.
+- Slower rhythm than shorts: entrances 0.8–1.2 s, staggers 0.08–0.2 s.
+- Data should *grow*: counting numbers (count) plus growing bars (bar), with a small footnote naming the data source.
+- Screenshots go *in a frame*: the `.shot` browser frame with `tilt` and `sheen`.
+- Brand colours: don't edit `_runtime/runtime.css` (it gets overwritten). Override in the `<style>` block of `index.html`, e.g. `:root{--gold:#4FA3FF;--glow-rgb:79,163,255;}`.
 
-## 4. 檢查清單（看總覽圖時逐項確認）
+## 4. Checklist (go through it on every contact sheet)
 
-- [ ] 每張截圖都看得出「這句在講什麼」
-- [ ] 沒有文字超出卡片、超出畫面
-- [ ] 沒有元素互相重疊（特別是主持角色）
-- [ ] 字幕沒有被擋住，也沒有超過兩行
-- [ ] 上一場的元素已經離場
-- [ ] 英文版版面也正常
-- [ ] 片尾文字完整
+- [ ] Each frame makes clear what that line is about
+- [ ] No text overflows its card or the frame
+- [ ] No elements overlap (especially the host)
+- [ ] Subtitles are never covered and never exceed two lines
+- [ ] The previous scene's elements are gone
+- [ ] The other language version also lays out correctly
+- [ ] The outro text is complete

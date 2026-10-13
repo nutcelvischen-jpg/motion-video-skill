@@ -1,72 +1,74 @@
-# 旁白與 script.json 寫作指南
+# Writing narration and script.json
 
-## 1. 檔案格式
+## 1. File format
 
 ```json
 {
-  "format": "shorts",                 // "shorts"（直式 1080×1920）或 "wide"（橫式 1920×1080）
-  "size": [1080, 1920],               // 可省略，依 format 自動決定
-  "langs": ["zh", "en"],              // 要做哪些語言；第一個是預設
-  "voice": { "zh": "Puck", "en": "Charon" },     // Gemini TTS 聲音名稱，見 voices.md
-  "style": {                          // 整支影片的聲音指示（寫給 TTS 看的導演筆記）
-    "zh": "請用台灣口音的華語，像親切活潑的年輕老師，語速稍快，不要播音腔。",
-    "en": "Warm British English, friendly young teacher, brisk pace."
+  "format": "shorts",                 // "shorts" (vertical 1080×1920) or "wide" (horizontal 1920×1080)
+  "size": [1080, 1920],               // optional; derived from format
+  "langs": ["en", "zh"],              // languages to produce; the first is the default
+  "voice": { "en": "Charon", "zh": "Puck" },     // Gemini TTS voice names, see voices.md
+  "style": {                          // voice direction for the whole video (director's notes for TTS)
+    "en": "Warm, clear British English, like a friendly young teacher. Brisk pace.",
+    "zh": "請用台灣口音的華語，像親切活潑的年輕老師，語速稍快，不要播音腔。"
   },
   "meta": {
-    "common": { "num": 1 },           // 各語言共用：集數（shorts）、品牌名 brand（wide）
-    "zh": {
-      "series": "AI 幼幼班",          // shorts：左上角系列名
-      "topic": "API 是什麼？",        // shorts：右上角主題
-      "tagline": "AI 幼幼班",         // shorts：片尾小字
-      "outro": { "a": "API 就是", "b": "服務生", "c": "下一集 → 什麼是金鑰" },  // shorts 片尾三行
-      "event": "期末專題發表 · DEMO", // wide：右上角活動名
-      "hl": ["API", "服務生"]         // 字幕裡要上色的關鍵字
+    "common": { "num": 1 },           // shared across languages: episode number (shorts), brand (wide)
+    "en": {
+      "series": "AI Basics",          // shorts: series name, top left
+      "topic": "What is an API?",     // shorts: topic, top right
+      "tagline": "AI BASICS",         // shorts: small text in the outro
+      "outro": { "a": "An API is", "b": "the Waiter", "c": "Next → What is a key?" },  // shorts: three outro lines
+      "event": "FINAL PROJECT · DEMO",// wide: event name, top right
+      "hl": ["API", "waiter"]         // words to highlight in subtitles
     },
-    "en": { "...": "..." }
+    "zh": { "...": "..." }
   },
   "scenes": [
     {
-      "id": "s01",                    // 場景代號，配音檔名會用到，不要重複
-      "dir": { "zh": "開場，好奇地提問。", "en": "Curious opening." },  // 這一場的語氣
-      "zh": ["第一句", "第二句"],     // 台詞：每個元素是一句字幕
-      "en": ["First line.", "Second line."]
+      "id": "s01",                    // scene id, used in audio file names; must be unique
+      "dir": { "en": "Curious opening.", "zh": "開場，好奇地提問。" },  // tone for this scene
+      "en": ["First line.", "Second line."],   // each item is one subtitle
+      "zh": ["第一句", "第二句"]
     }
   ]
 }
 ```
 
-## 2. 寫旁白的原則
+(Comments are for explanation only; real JSON cannot contain comments.)
 
-1. **一句一個重點**：每句是一個字幕，中文 8～24 字最好讀，超過 28 字要拆開。
-2. **口語**：寫成「講給朋友聽」，不是寫報告。用「你」，少用「我們將會介紹」。
-3. **先鉤子再解釋**：第一場就丟出問題、反差或數字，3 秒內抓住注意力。
-4. **一個比喻撐全場**：抽象概念用生活比喻（API＝服務生、資料庫＝倉庫、金鑰＝鑰匙），之後的畫面都圍繞這個比喻。
-5. **結尾一句話總結**：最後一場用一句好記的話收尾，並對應到片尾 `outro`。
-6. **長度**：中文每秒約 4.5 字，60 秒 ≈ 250 字。英文每秒約 2.5 個字（words）。
-7. **台灣用語**：影片（不是視頻）、資料（不是數據）、軟體（不是軟件）、品質（不是質量）、網路（不是網絡）、程式（不是程序）、使用者（不是用戶也可以，但避免「小夥伴」「家人們」）。
+## 2. Narration principles
 
-## 3. 念法與字幕不同時
+1. **One idea per line**: each line becomes one subtitle. Keep English lines to about 6–14 words; split anything longer.
+2. **Conversational**: write it as you would say it to a friend, not as a report. Use "you"; avoid "In this video we will introduce…".
+3. **Hook first**: open with a question, a contrast or a number to grab attention in the first 3 seconds.
+4. **One metaphor carries the video**: explain abstract ideas with everyday images (API = waiter, database = warehouse, API key = house key) and build the visuals around that one metaphor.
+5. **End with one line**: the last scene sums up in one memorable sentence that matches the `outro`.
+6. **Length**: about 2.5 English words per second, so 60 s ≈ 150 words. Chinese runs about 4.5 characters per second.
+7. **Chinese versions**: use Taiwanese Mandarin vocabulary (影片, 資料, 軟體, 品質, 網路, 程式), not Mainland terms (視頻, 數據, 軟件, 質量, 網絡, 程序).
 
-TTS 會照字念，數字和英文容易念錯或念得不自然。用 `["念的", "顯示的"]`：
+## 3. When pronunciation and subtitles differ
+
+TTS reads exactly what it is given, so numbers, symbols and acronyms can come out wrong. Use `["spoken", "shown"]`:
 
 ```json
-["提及率從百分之二十八，衝到百分之八十一！", "提及率從 28%，衝到 81%！"]
-["我們用 G P T 來測試", "我們用 GPT 來測試"]
-["價格是新台幣九百六十五元", "價格是 NT$965"]
+["mentions jumped from twenty-eight percent to eighty-one percent!", "mentions jumped from 28% to 81%!"]
+["we tested it with G P T", "we tested it with GPT"]
+["it costs nine hundred sixty-five New Taiwan dollars", "it costs NT$965"]
 ```
 
-## 4. 語氣指示（style / dir）寫法
+## 4. Writing `style` and `dir`
 
-- `style` 描述「誰在講、對誰講、什麼口音、什麼速度」。
-- `dir` 只寫這一場跟平常不同的地方：「驚訝」「放慢、加重」「輕快收尾」。
-- 想要台灣口音一定要寫明「台灣口音的華語」，否則容易變成中國大陸口音。
+- `style` describes who is speaking, to whom, with what accent and at what pace.
+- `dir` only says what is different in this scene: "surprised", "slower, with emphasis", "light, upbeat close".
+- Name the accent explicitly ("British English", "Taiwanese Mandarin"), otherwise the voice may drift to a default accent.
 
-## 5. 範例：60 秒教學短片大綱
+## 5. Example: a 60-second explainer outline
 
-| 場景 | 目的 | 台詞（中文） | 畫面 |
+| Scene | Purpose | Narration | Visuals |
 |---|---|---|---|
-| s01 | 鉤子 | 你有沒有想過，App 是怎麼拿到資料的？／答案就是：API！ | 手機卡片＋問號 → API 字卡砸下 |
-| s02 | 比喻 | API 就像餐廳的服務生。／你點菜，服務生送進廚房，再把菜端出來。 | 你 → 服務生 → 廚房，箭頭畫出來 |
-| s03 | 例子 | 天氣 App 也是這樣，它向氣象局的 API「點」今天的天氣。 | 天氣卡片、資料飛過來 |
-| s04 | 重點 | 你不用知道廚房怎麼煮，只要會點菜就好！ | 綠色貼紙「會點菜就好」 |
-| 片尾 | 記憶點 | （無台詞） | API 就是 服務生 |
+| s01 | Hook | Ever wondered how a phone app gets its data? / The answer: an API! | Phone card with "?" → API sticker slams in |
+| s02 | Metaphor | An API is like a waiter in a restaurant. / You order, the waiter takes it to the kitchen, then brings your food back. | You → Waiter → Kitchen, arrows drawn in |
+| s03 | Example | A weather app works the same way: it "orders" today's weather from a weather service's API. | Weather card, data flying in |
+| s04 | Takeaway | You don't need to know how the kitchen cooks. You just need to know how to order! | Green sticker "Just know how to order" |
+| Outro | Memory hook | (no narration) | An API is the Waiter |

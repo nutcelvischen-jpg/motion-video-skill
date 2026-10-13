@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=block");
-/* 橫式高級感版型 1920×1080：可可色底 + 金色點綴。換品牌色只要改 :root */
+/* Wide premium template 1920×1080: cocoa background + gold accents. Change brand colours via :root */
 :root{
   --bg1:#241712; --bg2:#1A110D; --bg3:#130C09;
   --cream:#F7EEDC; --gold:#F4B92D; --champ:#E5C07B; --rose:#E86B5A; --mint:#7FD3B0; --muted:#A8968A;
@@ -27,14 +27,14 @@ body{font-family:"Noto Sans TC","Inter",sans-serif;color:var(--cream);-webkit-fo
 .lang-en #subbox{font-size:34px}
 #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 60%,rgba(0,0,0,.45) 100%);z-index:25}
 
-/* 文字層級 */
+/* type scale */
 .eyebrow{font-size:24px;letter-spacing:.32em;color:var(--champ);text-transform:uppercase}
 .h1{font-family:"Noto Serif TC",serif;font-weight:900;font-size:110px;line-height:1.12}
 .h2{font-family:"Noto Serif TC",serif;font-weight:700;font-size:72px;line-height:1.2}
 .gold{color:var(--gold)}
 .foot{font-size:20px;color:var(--muted);letter-spacing:.06em}
 
-/* 元件 */
+/* components */
 .glass{background:linear-gradient(160deg,rgba(255,248,235,.10),rgba(255,248,235,.03));border:1px solid var(--line);border-radius:28px;backdrop-filter:blur(18px);box-shadow:0 40px 80px rgba(0,0,0,.45);position:relative;overflow:hidden}
 .chip{display:inline-flex;align-items:center;gap:12px;padding:14px 26px;border-radius:999px;border:1px solid var(--line);background:rgba(255,248,235,.07);font-size:28px;font-weight:500;white-space:nowrap}
 .chip i{width:10px;height:10px;border-radius:50%;background:var(--gold);display:block}

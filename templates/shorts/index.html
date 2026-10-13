@@ -1,8 +1,8 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><title>EP01 API 是什麼</title>
+<html><head><meta charset="utf-8"><title>EP01 What is an API</title>
 <link rel="stylesheet" href="_runtime/runtime.css">
 <style>
-/* ── 這一集專用的版面（座標以 #stage 左上角為 0,0；寬 1080、高 1330） ── */
+/* ── Layout for this episode (coordinates from #stage top-left; 1080 wide, 1330 tall) ── */
 #host{left:270px;top:660px}
 #phone{left:300px;top:60px;width:480px;padding:30px;opacity:0;text-align:center}
 #phone .scr{height:520px;border:6px solid var(--ink);border-radius:30px;background:#BFE6F5;display:grid;place-items:center;font-size:220px;font-weight:900;font-family:"Inter"}
@@ -47,13 +47,13 @@ window.EPISODE = {
   },
   build(c) {
     const { m, S, L, LE, LM } = c;
-    // S1：主持人登場、手機出現、API 字卡砸下來
+    // S1: host enters, phone appears, API sticker slams in
     c.hostTo({ scale: 1, opacity: 1 }, S(0).start, .5);
     c.wave(S(0).start + .3, L(0, 1));
     c.show("#phone", S(0).start + .4, .45);
-    c.hostTo({ x: -230, y: 60, scale: .55 }, L(0, 1) - .2, .5);       // 主持人退到左下角
+    c.hostTo({ x: -230, y: 60, scale: .55 }, L(0, 1) - .2, .5);       // host steps back to the lower left
     c.slam("#api", L(0, 1) + .15);
-    // S2：三個節點 + 箭頭
+    // S2: three nodes + arrows
     c.fade(["#phone", "#api"], S(1).start - .25);
     ["#n1", "#n2", "#n3"].forEach((id, k) => c.pop(id, S(1).start + .1 + k * .25));
     c.draw("#a1", L(1, 1), .5, 200);
@@ -61,7 +61,7 @@ window.EPISODE = {
     c.draw("#a2", LM(1, 1, .35), .5, 200);
     c.draw("#a3", LM(1, 1, .65), .6, 1000);
     c.pop("#food", LM(1, 1, .7));
-    // S3：重點貼紙 + 片尾
+    // S3: key sticker + outro
     c.fade(["#order", "#food", "#arrows", "#flow"], S(2).start - .2);
     c.hostTo({ x: 0, y: 0, scale: .9 }, S(2).start, .5);
     c.slam("#easy", L(2, 1));
