@@ -1,0 +1,41 @@
+{
+  "format": "wide",
+  "size": [1920, 1080],
+  "langs": ["zh", "en"],
+  "voice": { "zh": "Leda", "en": "Aoede" },
+  "style": {
+    "zh": "請用台灣口音的華語，活潑、有自信的年輕女生，像在發表會上介紹自己的作品。語氣明亮、咬字清楚，不要播音腔。",
+    "en": "Bright, confident young British woman presenting her own project at a showcase. Clear and upbeat."
+  },
+  "meta": {
+    "common": { "brand": "SnackMap" },
+    "zh": { "event": "期末專題發表 · DEMO", "hl": ["SnackMap", "找得到", "看得懂", "訂得到", "3 分鐘"] },
+    "en": { "event": "FINAL PROJECT · DEMO", "hl": ["SnackMap", "Find", "Understand", "Order", "3 minutes"] }
+  },
+  "scenes": [
+    {
+      "id": "s01",
+      "dir": { "zh": "熱情打招呼。", "en": "Warm greeting." },
+      "zh": ["嗨！我是小金，帶你看看我們的期末專題。", "SnackMap，校園美食地圖！"],
+      "en": ["Hi! I'm Goldie, and this is our final project.", "SnackMap, the campus food map!"]
+    },
+    {
+      "id": "s02",
+      "dir": { "zh": "一字一字點出三個重點。", "en": "Land each of the three points." },
+      "zh": ["它只做三件事：找得到、看得懂、訂得到。"],
+      "en": ["It does just three things: Find, Understand, Order."]
+    },
+    {
+      "id": "s03",
+      "dir": { "zh": "講到數字時加重語氣，帶點驕傲。", "en": "Emphasise the numbers, a little proud." },
+      "zh": ["試用一個月，", ["同學找午餐的時間，從十二分鐘縮短到三分鐘！", "同學找午餐的時間，從 12 分鐘縮短到 3 分鐘！"]],
+      "en": ["After a one-month trial,", "lunch search time dropped from 12 minutes to 3 minutes!"]
+    },
+    {
+      "id": "s04",
+      "dir": { "zh": "溫暖收尾。", "en": "Warm close." },
+      "zh": ["SnackMap，讓午餐不再煩惱。"],
+      "en": ["SnackMap. Lunch, sorted."]
+    }
+  ]
+}

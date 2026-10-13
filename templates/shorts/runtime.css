@@ -1,0 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+TC:wght@500;700;800;900&display=block");
+/* 直式短影音版型 1080×1920：米色紙張、黑色墨線、橘色強調 */
+:root{
+  --paper:#EFE9DC; --paper-edge:#CFC5B1; --ink:#1B1A17; --ink-soft:#4A463E;
+  --accent:#E8622E; --accent-soft:#F6B48F; --teal:#2E8C80; --sky:#7FD3FF; --red:#C8361E; --green:#3E9B5B; --yellow:#F2D27A;
+  --panel:#1D1C1A; --panel-line:#34322E; --cream:#FBF7EE;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--paper)}
+body{font-family:"Noto Sans TC","Inter",sans-serif;color:var(--ink);position:relative}
+.cjk{font-family:"Noto Sans TC","Inter",sans-serif}
+.lang-en,.lang-en .cjk{font-family:"Inter","Noto Sans TC",sans-serif}
+.mono{font-family:"JetBrains Mono","Noto Sans TC",monospace}
+.abs{position:absolute}
+
+#frame{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse 75% 60% at 50% 45%,#F6F1E6 0%,var(--paper) 55%,var(--paper-edge) 100%)}
+#weave{position:absolute;inset:0}
+#stage{left:0;top:170px;width:1080px;height:1330px}   /* 內容區：header 下方、字幕上方 */
+
+/* header */
+#hdr{left:64px;right:64px;top:70px;height:60px;display:flex;justify-content:space-between;align-items:center;font-size:30px;font-weight:700;z-index:5}
+#hdr .tag{display:flex;gap:14px;align-items:center;white-space:nowrap}
+#hdr .ep{background:var(--ink);color:var(--paper);padding:6px 16px;border-radius:30px;font-weight:800}
+#hdr .topic{color:var(--ink-soft);font-weight:600;white-space:nowrap}
+.lang-en #hdr{font-size:26px}
+
+/* 元件：卡片、貼紙、深色面板、終端機、瀏覽器 */
+.card{background:var(--cream);border:6px solid var(--ink);border-radius:26px;box-shadow:8px 8px 0 var(--ink)}
+.panel{background:var(--panel);border-radius:44px;box-shadow:0 24px 50px rgba(40,30,10,.28),inset 0 0 0 2px var(--panel-line);color:#F4EFE6}
+.sticker{position:absolute;opacity:0;font-weight:900;font-size:56px;padding:16px 34px;border:6px solid var(--ink);border-radius:24px;background:var(--cream);box-shadow:8px 8px 0 var(--ink);white-space:nowrap}
+.sticker.hot{background:var(--accent);color:var(--cream)}
+.sticker.dark{background:var(--ink);color:var(--cream)}
+.sticker.good{background:var(--green);color:var(--cream)}
+.lang-en .sticker{font-size:46px}
+.kin{font-weight:900;line-height:1.05;letter-spacing:-.02em}
+.term{padding:30px 34px;font-family:"JetBrains Mono","Noto Sans TC",monospace;font-size:36px;line-height:1.55;color:#E9E2D4}
+.term .p{color:#9BE3A8} .term .r{color:#FF8A70} .term .y{color:#F2D27A} .term .c{color:#8E877B}
+.caret{display:inline-block;width:4px;height:1em;background:currentColor;vertical-align:-.12em;margin-left:4px}
+.browser{background:var(--cream);border:6px solid var(--ink);border-radius:28px;overflow:hidden;box-shadow:10px 10px 0 var(--ink)}
+.browser .bar{display:flex;align-items:center;gap:12px;background:#E3D8C1;border-bottom:5px solid var(--ink);padding:16px 22px}
+.browser .bar i{width:18px;height:18px;border-radius:50%;background:var(--red);display:block}
+.browser .bar i:nth-child(2){background:var(--yellow)} .browser .bar i:nth-child(3){background:var(--green)}
+.browser .url{flex:1;background:var(--cream);border:4px solid var(--ink);border-radius:30px;padding:6px 20px;font-family:"JetBrains Mono",monospace;font-size:30px;font-weight:700;white-space:nowrap;overflow:hidden}
+.browser .body{padding:30px}
+.boil{filter:url(#boil)}
+
+/* 主持角色 */
+#host{width:540px;height:648px;transform-origin:50% 100%}
+
+/* 片尾 */
+#dark{left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse at 50% 42%,#2A2723 0%,#141311 70%);opacity:0}
+#outro{left:40px;width:1000px;top:520px;text-align:center;color:#F4EFE6;opacity:0}
+#outro .a{font-size:80px;font-weight:800;opacity:.85}
+#outro .b{font-size:140px;font-weight:900;color:var(--accent);margin:26px 0 10px;position:relative;display:inline-block;line-height:1.05}
+#outro .b svg{position:absolute;left:-10px;bottom:-40px;width:calc(100% + 20px);height:50px;overflow:visible}
+#outro .c{font-size:44px;font-weight:800;margin:50px auto 0;background:#F4EFE6;color:#1B1A17;display:table;padding:12px 30px;border-radius:22px}
+#outro .tagline{margin-top:90px;font-size:34px;color:#9E968A;font-weight:700;letter-spacing:.08em}
+.lang-en #outro .a{font-size:64px} .lang-en #outro .b{font-size:116px} .lang-en #outro .c{font-size:38px}
+
+/* 字幕 */
+#sub{left:60px;right:60px;top:1580px;height:220px;display:flex;align-items:center;justify-content:center;z-index:6}
+#sub .box{word-break:keep-all;background:var(--cream);border:4px solid var(--ink);border-radius:28px;padding:20px 40px;font-size:52px;font-weight:800;line-height:1.3;text-align:center;box-shadow:6px 6px 0 rgba(27,26,23,.85);max-width:960px}
+.lang-en #sub .box{font-size:46px;line-height:1.25;font-weight:700;text-wrap:balance}
+#sub .box b{color:var(--accent)}
+
+/* 膠片質感 */
+#grain{left:0;top:0;width:1080px;height:1920px;opacity:.10;mix-blend-mode:multiply;pointer-events:none}
+#dust,#vig{left:0;top:0;width:1080px;height:1920px;pointer-events:none}
+#vig{background:radial-gradient(ellipse 80% 70% at 50% 48%,rgba(0,0,0,0) 60%,rgba(40,28,10,.28) 100%)}

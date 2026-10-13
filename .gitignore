@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+probe.wav
+videos/*/out/
+videos/*/stills/
+videos/*/audio_*/

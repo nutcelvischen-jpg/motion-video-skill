@@ -1,0 +1,117 @@
+/* 直式短影音版型（1080×1920）— 手繪墨線、boil 抖動、膠片顆粒、貼紙字卡
+ * 頁面需定義 window.EPISODE = { strings:{zh:{},en:{}}, build(ctx), tick(t,ctx)? }
+ * 片頭、字幕、片尾、主持角色都由這支檔案自動產生。
+ */
+(function () {
+  const { LANG, TL, META, $, $$, rng, subtitle, ready, fillStrings, timeline } = window.MV;
+  const EP = window.EPISODE;
+  const num = String(META.num || 1).padStart(2, "0");
+  const outro = META.outro || { a: "", b: "", c: "" };
+
+  /* ---------- 畫框（header / 字幕 / 片尾 / 顆粒 / 灰塵 / 暗角） ---------- */
+  const stage = $("#stage"); stage.classList.add("abs");
+  const frame = document.createElement("div"); frame.id = "frame";
+  frame.innerHTML = `
+<svg width="0" height="0" style="position:absolute"><filter id="boil" x="-5%" y="-5%" width="110%" height="110%">
+ <feTurbulence id="boilT" type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="1"/>
+ <feDisplacementMap in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<div id="weave">
+ <div id="hdr" class="abs"><div class="tag"><span class="ep">EP${num}</span><span>${META.series || ""}</span></div><div class="topic">${META.topic || ""}</div></div>
+ <div id="dark" class="abs"></div>
+ <div id="outro" class="abs cjk"><div class="a">${outro.a || ""}</div>
+   <div class="b">${outro.b || ""}<svg viewBox="0 0 600 50" preserveAspectRatio="none"><path id="outline" d="M6 30 C150 10,330 44,594 18" stroke="#F4EFE6" stroke-width="12" fill="none" stroke-linecap="round"/></svg></div>
+   ${outro.c ? `<div class="c">${outro.c}</div>` : ""}
+   <div class="tagline">${META.tagline || META.series || ""} · ${num}</div></div>
+ <div id="sub" class="abs cjk"><div class="box" id="subbox" style="opacity:0"></div></div>
+</div>
+<canvas id="grain" class="abs" width="540" height="960"></canvas>
+<svg id="dust" class="abs" viewBox="0 0 1080 1920"></svg>
+<div id="vig" class="abs"></div>`;
+  document.body.prepend(frame);
+  $("#weave").insertBefore(stage, $("#dark"));
+
+  /* ---------- 主持角色：小機器人（放一個 <div id="host"></div> 就會出現） ---------- */
+  const HOST_SVG = `<svg class="boil" viewBox="0 0 420 504" width="100%" height="100%">
+ <ellipse cx="210" cy="490" rx="130" ry="12" fill="#1B1A17" opacity=".14"/>
+ <path d="M170 430 v44 h-26 M250 430 v44 h26" stroke="#1B1A17" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M130 300 C130 280,290 280,290 300 L306 420 C306 440,114 440,114 420 Z" fill="#2E8C80" stroke="#1B1A17" stroke-width="8" stroke-linejoin="round"/>
+ <path d="M180 340 h60" stroke="#FBF7EE" stroke-width="7" stroke-linecap="round"/>
+ <g id="hArmL" transform="translate(132 318)"><path d="M0 0 C-40 20,-56 60,-46 92" stroke="#1B1A17" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="-46" cy="98" r="14" fill="#FBF7EE" stroke="#1B1A17" stroke-width="6"/></g>
+ <g id="hArmR" transform="translate(288 318)"><path d="M0 0 C40 20,56 60,46 92" stroke="#1B1A17" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="46" cy="98" r="14" fill="#FBF7EE" stroke="#1B1A17" stroke-width="6"/></g>
+ <path d="M210 70 C206 50,216 40,210 24" stroke="#1B1A17" stroke-width="8" fill="none" stroke-linecap="round"/>
+ <circle id="hAnt" cx="210" cy="18" r="16" fill="#E8622E" stroke="#1B1A17" stroke-width="6"/>
+ <rect x="80" y="66" width="260" height="214" rx="80" fill="#FBF7EE" stroke="#1B1A17" stroke-width="8"/>
+ <ellipse cx="128" cy="210" rx="22" ry="13" fill="#F6B48F"/><ellipse cx="292" cy="210" rx="22" ry="13" fill="#F6B48F"/>
+ <g id="hEyeL" transform="translate(160 168)"><ellipse rx="15" ry="22" fill="#1B1A17"/><circle cx="5" cy="-8" r="5" fill="#FBF7EE"/></g>
+ <g id="hEyeR" transform="translate(260 168)"><ellipse rx="15" ry="22" fill="#1B1A17"/><circle cx="5" cy="-8" r="5" fill="#FBF7EE"/></g>
+ <path id="hBrow" d="M140 132 L180 140 M240 140 L280 132" stroke="#1B1A17" stroke-width="7" stroke-linecap="round" opacity="0"/>
+ <path id="hMouth" d="M188 222 C200 238,220 238,232 222" stroke="#1B1A17" stroke-width="7" fill="none" stroke-linecap="round"/>
+ <ellipse id="hMouthO" cx="210" cy="230" rx="11" ry="13" fill="#1B1A17" opacity="0"/>
+ <path id="hSweat" d="M330 120 C322 136,322 146,330 150 C338 146,338 136,330 120 Z" fill="#7FD3FF" stroke="#1B1A17" stroke-width="4" opacity="0"/>
+</svg>`;
+  const host = $("#host");
+  if (host) { host.classList.add("abs"); host.innerHTML = HOST_SVG; gsap.set("#host", { transformOrigin: "50% 100%", scale: 0, opacity: 0 }); }
+
+  const T = fillStrings(EP);
+
+  /* ---------- 動畫小工具（build 裡用 ctx.xxx 呼叫） ---------- */
+  const { m, S, L, LE, SE, LM } = timeline();
+  const state = { shock: 0, wave: 0 };
+  const ctx = {
+    m, S, L, LE, SE, LM, T, LANG, $, $$, TL, rng, state,
+    pop(sel, t, d = 0.45) { m.fromTo(sel, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: d, ease: "back.out(2.2)" }, t); },
+    slam(sel, t) { m.fromTo(sel, { scale: 2.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.26, ease: "power4.in" }, t); },
+    show(sel, t, d = 0.35, from = { y: 30 }) { m.fromTo(sel, Object.assign({ opacity: 0 }, from), { opacity: 1, x: 0, y: 0, duration: d, ease: "power3.out" }, t); },
+    fade(sel, t, d = 0.3) { m.to(sel, { opacity: 0, duration: d }, t); },
+    draw(sel, t, d = 0.6, len = 1200) { m.fromTo(sel, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: d, ease: "power2.out" }, t); },
+    type(el, text, t, d) { const o = { n: 0 }; const node = typeof el === "string" ? $(el) : el; m.set(node, { textContent: "" }, 0); m.to(o, { n: text.length, duration: d, ease: "none", onUpdate: () => { node.textContent = text.slice(0, Math.round(o.n)); } }, t); },
+    hostTo(vars, t, d = 0.6) { m.to("#host", Object.assign({ duration: d, ease: "power3.inOut" }, vars), t); },
+    shock(t0, t1) { m.set(state, { shock: 1 }, t0); if (t1 !== undefined) m.set(state, { shock: 0 }, t1); },
+    wave(t0, t1) { m.set(state, { wave: 1 }, t0); if (t1 !== undefined) m.set(state, { wave: 0 }, t1); },
+    outroAt(t) {
+      m.to("#dark", { opacity: 1, duration: 0.45, ease: "power2.inOut" }, t - 0.25);
+      m.fromTo("#outro", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, t - 0.05);
+      m.fromTo("#outline", { strokeDasharray: 640, strokeDashoffset: 640 }, { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.9);
+      m.to("#hdr", { color: "#F4EFE6", duration: 0.3 }, t - 0.25);
+      m.to("#hdr .ep", { backgroundColor: "#F4EFE6", color: "#1B1A17", duration: 0.3 }, t - 0.25);
+    },
+  };
+  EP.build(ctx);
+  m.set({}, {}, TL.total);
+
+  /* ---------- 每一格都會跑的程序動畫 ---------- */
+  const gctx = $("#grain").getContext("2d"); const gframes = [];
+  for (let g = 0; g < 6; g++) {
+    const r = rng(1000 + g), img = gctx.createImageData(540, 960);
+    for (let p = 0; p < img.data.length; p += 4) { const v = 128 + (r() - 0.5) * 230; img.data[p] = img.data[p + 1] = img.data[p + 2] = v; img.data[p + 3] = 255; }
+    gframes.push(img);
+  }
+  const has = (id) => document.getElementById(id);
+  function seek(t) {
+    m.seek(t, false);
+    const step = Math.floor(t * 10);                 // boil：每 0.1 秒換一次線條抖動
+    $("#boilT").setAttribute("seed", (step % 9) + 1);
+    gctx.putImageData(gframes[Math.floor(t * 12) % 6], 0, 0);
+    const r = rng(step * 31 + 5); let dust = ""; const nd = 5 + Math.floor(r() * 5);
+    for (let i = 0; i < nd; i++) dust += `<circle cx="${(r() * 1080).toFixed(0)}" cy="${(r() * 1920).toFixed(0)}" r="${(1 + r() * 3.5).toFixed(1)}" fill="#1B1A17" opacity="${(0.25 + r() * 0.4).toFixed(2)}"/>`;
+    if (r() < 0.35) { const x = r() * 1080, y = r() * 1920; dust += `<path d="M${x} ${y} c ${r() * 40} ${r() * 30}, ${r() * 60} ${-r() * 20}, ${40 + r() * 60} ${r() * 50}" stroke="#1B1A17" stroke-width="2" fill="none" opacity=".35"/>`; }
+    $("#dust").innerHTML = dust;
+    const w = rng(step * 7 + 1);
+    $("#weave").style.transform = `translate(${((w() - 0.5) * 2.4).toFixed(2)}px, ${((w() - 0.5) * 2.4).toFixed(2)}px)`;
+    const talking = subtitle(t, $("#subbox"));
+    if (has("hEyeL")) {
+      const bl = t % 3.1 < 0.12 ? 0.12 : 1;
+      $("#hEyeL").setAttribute("transform", `translate(160 168) scale(1 ${bl})`);
+      $("#hEyeR").setAttribute("transform", `translate(260 168) scale(1 ${bl})`);
+      $("#hAnt").setAttribute("cy", (18 + Math.sin(t * 5) * 3).toFixed(1));
+      const open = talking && (Math.sin(t * 19) + Math.sin(t * 11.7 + 1)) > 0.15;   // 講話時自動嘴巴開合
+      $("#hMouth").setAttribute("opacity", open ? 0 : 1); $("#hMouthO").setAttribute("opacity", open ? 1 : 0);
+      ["#hBrow", "#hSweat"].forEach((s) => $(s).setAttribute("opacity", state.shock));
+      $("#hArmR").setAttribute("transform", `translate(288 318) rotate(${(-110 * state.wave + Math.sin(t * 8) * 18 * state.wave).toFixed(1)})`);
+    }
+    $$(".caret").forEach((c) => (c.style.opacity = Math.floor(t * 2.5) % 2 ? 0 : 1));
+    if (EP.tick) EP.tick(t, ctx);
+  }
+  window.__seek = seek;
+  ready(seek, [["Noto Sans TC", [700, 800, 900]], ["Inter", [600, 700, 800, 900]], ["JetBrains Mono", [500, 700]]]);
+})();

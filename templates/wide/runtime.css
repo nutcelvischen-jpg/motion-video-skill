@@ -1,0 +1,52 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=block");
+/* 橫式高級感版型 1920×1080：可可色底 + 金色點綴。換品牌色只要改 :root */
+:root{
+  --bg1:#241712; --bg2:#1A110D; --bg3:#130C09;
+  --cream:#F7EEDC; --gold:#F4B92D; --champ:#E5C07B; --rose:#E86B5A; --mint:#7FD3B0; --muted:#A8968A;
+  --line:rgba(229,192,123,.28); --glow-rgb:244,185,45;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg2)}
+body{font-family:"Noto Sans TC","Inter",sans-serif;color:var(--cream);-webkit-font-smoothing:antialiased}
+.serif{font-family:"Noto Serif TC",serif}
+.num{font-family:"Inter","Noto Sans TC",sans-serif;font-feature-settings:"tnum"}
+.mono{font-family:"JetBrains Mono",monospace}
+.abs{position:absolute}
+#frame{position:absolute;inset:0;overflow:hidden;
+  background:radial-gradient(1100px 700px at 18% 12%,rgba(var(--glow-rgb),.13),transparent 60%),
+             radial-gradient(900px 700px at 90% 100%,rgba(232,107,90,.10),transparent 60%),
+             linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%)}
+#bokeh{position:absolute;inset:0;width:1920px;height:1080px;opacity:.9}
+#stage{position:absolute;inset:0}
+#chrome{position:absolute;left:72px;right:72px;top:52px;display:flex;justify-content:space-between;align-items:center;z-index:20;font-size:22px;letter-spacing:.14em;color:var(--muted)}
+#chrome .brandmark{font-family:"Noto Serif TC",serif;color:var(--cream);letter-spacing:.08em;font-size:26px;display:flex;align-items:center;gap:14px}
+#chrome .dot{width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 18px var(--gold)}
+#sub{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:center;z-index:30}
+#subbox{max-width:1400px;padding:14px 34px;border-radius:999px;background:rgba(20,13,10,.62);backdrop-filter:blur(14px);border:1px solid var(--line);font-size:38px;font-weight:500;text-align:center;line-height:1.4}
+#subbox b{color:var(--gold);font-weight:700}
+.lang-en #subbox{font-size:34px}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 60%,rgba(0,0,0,.45) 100%);z-index:25}
+
+/* 文字層級 */
+.eyebrow{font-size:24px;letter-spacing:.32em;color:var(--champ);text-transform:uppercase}
+.h1{font-family:"Noto Serif TC",serif;font-weight:900;font-size:110px;line-height:1.12}
+.h2{font-family:"Noto Serif TC",serif;font-weight:700;font-size:72px;line-height:1.2}
+.gold{color:var(--gold)}
+.foot{font-size:20px;color:var(--muted);letter-spacing:.06em}
+
+/* 元件 */
+.glass{background:linear-gradient(160deg,rgba(255,248,235,.10),rgba(255,248,235,.03));border:1px solid var(--line);border-radius:28px;backdrop-filter:blur(18px);box-shadow:0 40px 80px rgba(0,0,0,.45);position:relative;overflow:hidden}
+.chip{display:inline-flex;align-items:center;gap:12px;padding:14px 26px;border-radius:999px;border:1px solid var(--line);background:rgba(255,248,235,.07);font-size:28px;font-weight:500;white-space:nowrap}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--gold);display:block}
+.shot{border-radius:22px;overflow:hidden;background:#FAF8F5;box-shadow:0 60px 120px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);position:relative}
+.shot .bar{height:46px;background:#EFEAE2;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid #DDD5C8}
+.shot .bar i{width:13px;height:13px;border-radius:50%;background:#E0675A;display:block}
+.shot .bar i:nth-child(2){background:#E8B44C} .shot .bar i:nth-child(3){background:#6CBF6A}
+.shot .bar .u{margin-left:18px;flex:1;max-width:620px;height:28px;border-radius:14px;background:#fff;color:#8A7F72;font-size:16px;display:flex;align-items:center;padding:0 14px;font-family:"Inter",sans-serif}
+.shot img{display:block;width:100%}
+.sheen{position:absolute;top:0;bottom:0;width:30%;left:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);pointer-events:none;mix-blend-mode:overlay}
+.track{height:84px;border-radius:20px;background:rgba(255,248,235,.06);border:1px solid var(--line);overflow:hidden}
+.track i{display:block;height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#C98A12,var(--gold),#FFE08A)}
+.caret{display:inline-block;width:3px;height:1em;background:var(--gold);vertical-align:-.12em;margin-left:6px}
+#host{position:absolute;width:520px;height:520px}
+#host img{width:100%;height:100%;object-fit:contain;transform-origin:50% 95%;filter:drop-shadow(0 30px 40px rgba(0,0,0,.45))}

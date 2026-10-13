@@ -1,0 +1,80 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>SnackMap Demo</title>
+<link rel="stylesheet" href="_runtime/runtime.css">
+<style>
+/* ── 這一集專用版面（畫面 1920×1080，上方 140px 有品牌列、下方 160px 是字幕區） ── */
+#host{left:700px;top:260px}
+#title{left:0;width:1920px;top:300px;text-align:center}
+#title .h1{font-family:"Inter","Noto Serif TC";font-weight:800;font-size:170px}
+#title .h1 em{font-style:normal;color:var(--gold)}
+#title .h2{margin-top:6px;color:var(--champ);font-size:58px;letter-spacing:.2em}
+#pillars{left:420px;top:330px;width:1320px;display:flex;gap:40px}
+.pl{flex:1;padding:44px 40px;opacity:0}
+.pl .ix{font-family:"Inter";font-size:22px;color:var(--champ);letter-spacing:.2em}
+.pl .ti{font-family:"Noto Serif TC";font-weight:900;font-size:70px;margin-top:12px}
+.pl .su{font-size:28px;color:var(--muted);margin-top:10px}
+#cmp{left:540px;top:250px;width:1200px;opacity:0}
+#cmp .ttl{font-family:"Noto Serif TC";font-weight:700;font-size:54px;margin-bottom:56px}
+#cmp .row{display:flex;align-items:center;gap:40px;margin-bottom:50px}
+#cmp .lb{width:220px;font-size:36px;color:var(--muted)}
+#cmp .track{flex:1}
+#b1 i{background:linear-gradient(90deg,#6B5547,#8E7465)}
+#cmp .pv{width:300px;text-align:right;font-family:"Inter";font-weight:800;font-size:96px}
+#end{left:0;width:1920px;top:360px;text-align:center}
+.lang-en .pl .ti{font-size:56px}
+</style></head>
+<body>
+<div id="stage">
+  <div id="title" class="abs"><div class="h1"><em>Snack</em>Map</div><div class="h2" data-t="sub"></div></div>
+  <div id="pillars" class="abs">
+    <div class="pl glass"><div class="ix">01</div><div class="ti" data-t="p1"></div><div class="su" data-t="p1s"></div><div class="sheen"></div></div>
+    <div class="pl glass"><div class="ix">02</div><div class="ti" data-t="p2"></div><div class="su" data-t="p2s"></div><div class="sheen"></div></div>
+    <div class="pl glass"><div class="ix">03</div><div class="ti" data-t="p3"></div><div class="su" data-t="p3s"></div><div class="sheen"></div></div>
+  </div>
+  <div id="cmp" class="abs">
+    <div class="ttl" data-t="cmpT"></div>
+    <div class="row"><div class="lb" data-t="before"></div><div class="track" id="b1"><i></i></div><div class="pv num" id="v1">0</div></div>
+    <div class="row"><div class="lb" data-t="after"></div><div class="track" id="b2"><i></i></div><div class="pv num gold" id="v2">0</div></div>
+    <div class="foot" data-t="foot"></div>
+  </div>
+  <div id="end" class="abs"><div class="h2" data-t="end1"></div><div class="h1 gold" data-t="end2" style="margin-top:20px"></div></div>
+  <div id="host"><img src="assets/host.svg" alt=""></div>
+</div>
+<script src="_runtime/gsap.min.js"></script>
+<script src="_tl.js"></script>
+<script src="_runtime/core.js"></script>
+<script>
+window.EPISODE = {
+  strings: {
+    zh: { sub:"校園美食地圖", p1:"找得到", p1s:"附近有什麼吃", p2:"看得懂", p2s:"價格、排隊、評價", p3:"訂得到", p3s:"一鍵預約取餐",
+          cmpT:"找午餐要花多久？", before:"使用前", after:"使用後", foot:"＊試用一個月、30 位同學自評", end1:"讓午餐", end2:"不再煩惱。" },
+    en: { sub:"THE CAMPUS FOOD MAP", p1:"Find", p1s:"What's nearby", p2:"Understand", p2s:"Price, queue, reviews", p3:"Order", p3s:"Pre-order in one tap",
+          cmpT:"How long does finding lunch take?", before:"Before", after:"After", foot:"*1-month trial, 30 students, self-reported", end1:"Lunch,", end2:"sorted." }
+  },
+  build(c) {
+    const { m, S, L, LE, LM } = c;
+    const min = v => Math.round(v) + (c.LANG === "zh" ? " 分" : " min");
+    // S1：主持人浮現 → 移到左側；標題模糊上浮
+    c.hostTo({ opacity: 1 }, S(0).start, .8);
+    c.hostTo({ x: -560, y: 180, scale: .6 }, L(0, 1) - .4, 1.0);
+    c.rise("#title .h1", L(0, 1), 1.1);
+    c.rise("#title .h2", L(0, 1) + .35, 1.0);
+    // S2：三張玻璃卡依序上浮 + 光澤掃過
+    c.out("#title", S(1).start - .4);
+    c.rise(".pl", S(1).start + .1, 1.0, 70);
+    [".pl:nth-child(1)", ".pl:nth-child(2)", ".pl:nth-child(3)"].forEach((s, k) => c.sheen(s, LM(1, 0, .35 + k * .2)));
+    // S3：數字長條對比
+    c.out("#pillars", S(2).start - .4);
+    m.fromTo("#cmp", { opacity: 0 }, { opacity: 1, duration: .6 }, S(2).start);
+    c.bar("#b1 i", 100, L(2, 1) + .2); c.count("#v1", 0, 12, L(2, 1) + .2, 1.4, min);
+    c.bar("#b2 i", 25, LM(2, 1, .6)); c.count("#v2", 0, 3, LM(2, 1, .6), 1.2, min);
+    // S4：收尾
+    c.out("#cmp", S(3).start - .4);
+    c.hostTo({ x: 0, y: 0, scale: .75 }, S(3).start - .3, 1.0);
+    c.hostTo({ x: -520 }, S(3).start + .6, 1.0);
+    c.rise("#end .h2", S(3).start + .7); c.rise("#end .h1", S(3).start + 1.0);
+  }
+};
+</script>
+<script src="_runtime/runtime.js"></script>
+</body></html>

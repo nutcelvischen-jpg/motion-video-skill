@@ -1,0 +1,43 @@
+{
+  "format": "shorts",
+  "size": [1080, 1920],
+  "langs": ["zh", "en"],
+  "voice": { "zh": "Puck", "en": "Charon" },
+  "style": {
+    "zh": "請用台灣口音的華語，像親切、活潑的年輕老師在跟學生解釋，語速稍快、句尾自然上揚，不要播音腔。",
+    "en": "Speak in a warm, clear British English accent, like a friendly young teacher. Brisk pace, light and upbeat."
+  },
+  "meta": {
+    "common": { "num": 1 },
+    "zh": {
+      "series": "AI 幼幼班", "topic": "API 是什麼？", "tagline": "AI 幼幼班",
+      "outro": { "a": "API 就是", "b": "服務生", "c": "下一集 → 什麼是金鑰" },
+      "hl": ["API", "服務生", "廚房", "點菜"]
+    },
+    "en": {
+      "series": "AI Basics", "topic": "What is an API?", "tagline": "AI BASICS",
+      "outro": { "a": "An API is", "b": "the Waiter", "c": "Next → What is a key?" },
+      "hl": ["API", "waiter", "kitchen", "order"]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s01",
+      "dir": { "zh": "開場，好奇地提問。", "en": "Curious opening question." },
+      "zh": ["你有沒有想過，手機 App 是怎麼拿到資料的？", "答案就是：API！"],
+      "en": ["Ever wondered how a phone app gets its data?", "The answer: an API!"]
+    },
+    {
+      "id": "s02",
+      "dir": { "zh": "用說故事的語氣，清楚分段。", "en": "Storytelling tone, clear steps." },
+      "zh": ["API 就像餐廳的服務生。", "你點菜，服務生把單子送進廚房，再把菜端出來給你。"],
+      "en": ["An API is like a waiter in a restaurant.", "You order, the waiter takes it to the kitchen, then brings your food back."]
+    },
+    {
+      "id": "s03",
+      "dir": { "zh": "收尾，肯定又輕快。", "en": "Upbeat wrap-up." },
+      "zh": ["你不用知道廚房怎麼煮，", "只要會點菜就好！"],
+      "en": ["You don't need to know how the kitchen cooks.", "You just need to know how to order!"]
+    }
+  ]
+}

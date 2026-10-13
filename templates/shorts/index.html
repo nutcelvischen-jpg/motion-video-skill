@@ -1,0 +1,73 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>EP01 API 是什麼</title>
+<link rel="stylesheet" href="_runtime/runtime.css">
+<style>
+/* ── 這一集專用的版面（座標以 #stage 左上角為 0,0；寬 1080、高 1330） ── */
+#host{left:270px;top:660px}
+#phone{left:300px;top:60px;width:480px;padding:30px;opacity:0;text-align:center}
+#phone .scr{height:520px;border:6px solid var(--ink);border-radius:30px;background:#BFE6F5;display:grid;place-items:center;font-size:220px;font-weight:900;font-family:"Inter"}
+#api{left:330px;top:640px;font-size:130px}
+#flow{left:40px;top:120px;width:1000px;display:flex;justify-content:space-between;align-items:center}
+.nd{width:270px;padding:34px 10px;text-align:center;font-size:52px;font-weight:900;opacity:0}
+.nd small{display:block;font-size:30px;font-weight:700;color:var(--ink-soft);margin-top:8px}
+.nd.mid{background:var(--yellow)}
+#arrows{left:0;top:330px;width:1080px;height:200px}
+#order{left:120px;top:480px;font-size:48px;transform:rotate(-4deg)}
+#food{left:560px;top:480px;font-size:48px;transform:rotate(3deg)}
+#easy{left:200px;top:300px;font-size:76px}
+.lang-en .nd{font-size:44px} .lang-en #easy{font-size:58px;left:120px}
+</style></head>
+<body>
+<div id="stage">
+  <div id="phone" class="abs card"><div class="scr">?</div></div>
+  <div id="api" class="sticker hot">API</div>
+  <div id="flow" class="abs cjk">
+    <div class="nd card" id="n1"><span data-t="you"></span><small data-t="youS"></small></div>
+    <div class="nd card mid" id="n2"><span data-t="api"></span><small data-t="apiS"></small></div>
+    <div class="nd card" id="n3"><span data-t="kit"></span><small data-t="kitS"></small></div>
+  </div>
+  <svg id="arrows" class="abs boil" viewBox="0 0 1080 200">
+    <path id="a1" d="M300 70 C350 40,390 40,420 70" stroke="#1B1A17" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path id="a2" d="M660 70 C710 40,750 40,780 70" stroke="#1B1A17" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path id="a3" d="M780 140 C720 190,360 190,300 140" stroke="#E8622E" stroke-width="10" fill="none" stroke-linecap="round"/>
+  </svg>
+  <div id="order" class="sticker" data-t="order"></div>
+  <div id="food" class="sticker hot" data-t="food"></div>
+  <div id="easy" class="sticker good" data-t="easy"></div>
+  <div id="host"></div>
+</div>
+<script src="_runtime/gsap.min.js"></script>
+<script src="_tl.js"></script>
+<script src="_runtime/core.js"></script>
+<script>
+window.EPISODE = {
+  strings: {
+    zh: { you:"你", youS:"點菜", api:"API", apiS:"服務生", kit:"廚房", kitS:"資料庫", order:"① 點菜", food:"② 上菜", easy:"會點菜就好！" },
+    en: { you:"You", youS:"order", api:"API", apiS:"waiter", kit:"Kitchen", kitS:"database", order:"① Order", food:"② Serve", easy:"Just know how to order!" }
+  },
+  build(c) {
+    const { m, S, L, LE, LM } = c;
+    // S1：主持人登場、手機出現、API 字卡砸下來
+    c.hostTo({ scale: 1, opacity: 1 }, S(0).start, .5);
+    c.wave(S(0).start + .3, L(0, 1));
+    c.show("#phone", S(0).start + .4, .45);
+    c.hostTo({ x: -230, y: 60, scale: .55 }, L(0, 1) - .2, .5);       // 主持人退到左下角
+    c.slam("#api", L(0, 1) + .15);
+    // S2：三個節點 + 箭頭
+    c.fade(["#phone", "#api"], S(1).start - .25);
+    ["#n1", "#n2", "#n3"].forEach((id, k) => c.pop(id, S(1).start + .1 + k * .25));
+    c.draw("#a1", L(1, 1), .5, 200);
+    c.pop("#order", L(1, 1) + .1);
+    c.draw("#a2", LM(1, 1, .35), .5, 200);
+    c.draw("#a3", LM(1, 1, .65), .6, 1000);
+    c.pop("#food", LM(1, 1, .7));
+    // S3：重點貼紙 + 片尾
+    c.fade(["#order", "#food", "#arrows", "#flow"], S(2).start - .2);
+    c.hostTo({ x: 0, y: 0, scale: .9 }, S(2).start, .5);
+    c.slam("#easy", L(2, 1));
+    c.outroAt(LE(2, 1) + .2);
+  }
+};
+</script>
+<script src="_runtime/runtime.js"></script>
+</body></html>
